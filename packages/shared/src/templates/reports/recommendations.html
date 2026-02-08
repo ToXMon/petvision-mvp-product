@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Veterinarian Recommendations - PetVision</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #1a1a1a;
+      line-height: 1.6;
+      background: #f8f9fa;
+    }
+    
+    .page {
+      width: 100%;
+      min-height: 100vh;
+      padding: 40px;
+      background: white;
+    }
+    
+    .page-header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    
+    .page-header h1 {
+      font-size: 36px;
+      font-weight: 800;
+      color: #1e40af;
+    }
+    
+    .page-header p {
+      font-size: 16px;
+      color: #6b7280;
+      margin-top: 8px;
+    }
+    
+    .recommendations-section {
+      margin-bottom: 30px;
+    }
+    
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .section-title::before {
+      content: '';
+      width: 6px;
+      height: 30px;
+      background: #3b82f6;
+      border-radius: 3px;
+    }
+    
+    .recommendation-card {
+      background: #f9fafb;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      border-left: 6px solid #6b7280;
+    }
+    
+    .recommendation-card.priority-immediate {
+      border-left-color: #dc2626;
+      background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    }
+    
+    .recommendation-card.priority-urgent {
+      border-left-color: #f59e0b;
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    }
+    
+    .recommendation-card.priority-routine {
+      border-left-color: #22c55e;
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    }
+    
+    .recommendation-card.priority-monitor {
+      border-left-color: #3b82f6;
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    }
+    
+    .recommendation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 20px;
+    }
+    
+    .recommendation-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+    
+    .priority-badge {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .priority-badge.immediate {
+      background: #dc2626;
+      color: white;
+    }
+    
+    .priority-badge.urgent {
+      background: #f59e0b;
+      color: white;
+    }
+    
+    .priority-badge.routine {
+      background: #22c55e;
+      color: white;
+    }
+    
+    .priority-badge.monitor {
+      background: #3b82f6;
+      color: white;
+    }
+    
+    .recommendation-category {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6b7280;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .recommendation-description {
+      font-size: 16px;
+      color: #374151;
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+    
+    .recommendation-timeframe {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+    }
+    
+    .recommendation-timeframe svg {
+      width: 18px;
+      height: 18px;
+    }
+    
+    .action-items {
+      margin-top: 20px;
+    }
+    
+    .action-items-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .action-items-title svg {
+      width: 20px;
+      height: 20px;
+      color: #3b82f6;
+    }
+    
+    .action-list {
+      list-style: none;
+    }
+    
+    .action-list li {
+      padding: 12px 0;
+      padding-left: 35px;
+      position: relative;
+      font-size: 15px;
+      color: #374151;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .action-list li:last-child {
+      border-bottom: none;
+    }
+    
+    .action-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #3b82f6;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    
+    .urgent-notice {
+      background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+      border: 2px solid #dc2626;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    
+    .urgent-notice-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+    
+    .urgent-notice h3 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #dc2626;
+      margin-bottom: 10px;
+    }
+    
+    .urgent-notice p {
+      font-size: 16px;
+      color: #991b1b;
+    }
+    
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 2px solid #e5e7eb;
+      text-align: center;
+      font-size: 12px;
+      color: #6b7280;
+    }
+    
+    .vet-contact {
+      margin-top: 20px;
+      padding: 20px;
+      background: #f0f9ff;
+      border-radius: 12px;
+      border: 2px dashed #3b82f6;
+    }
+    
+    .vet-contact h4 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1e40af;
+      margin-bottom: 10px;
+    }
+    
+    .vet-contact p {
+      font-size: 14px;
+      color: #1e3a8a;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="page-header">
+      <h1>Veterinarian Recommendations</h1>
+      <p>{{petName}} - Based on {{scanType}} Scan Results</p>
+    </header>
+    
+    {{#hasUrgentRecommendations}}
+    <div class="urgent-notice">
+      <div class="urgent-notice-icon">⚠️</div>
+      <h3>Immediate Attention Required</h3>
+      <p>This report contains urgent recommendations that require prompt veterinary care.</p>
+    </div>
+    {{/hasUrgentRecommendations}}
+    
+    <section class="recommendations-section">
+      <h2 class="section-title">Recommended Actions</h2>
+      
+      {{#recommendations}}
+      <div class="recommendation-card priority-{{priority}}">
+        <div class="recommendation-header">
+          <div>
+            <div class="recommendation-category">{{category}}</div>
+            <h3 class="recommendation-title">{{title}}</h3>
+          </div>
+          <span class="priority-badge {{priority}}">{{priorityLabel}}</span>
+        </div>
+        
+        <p class="recommendation-description">{{description}}</p>
+        
+        {{#timeframe}}
+        <div class="recommendation-timeframe">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+          </svg>
+          Timeframe: {{timeframe}}
+        </div>
+        {{/timeframe}}
+        
+        {{#hasActionItems}}
+        <div class="action-items">
+          <div class="action-items-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 11l3 3L22 4"/>
+              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+            </svg>
+            Action Items
+          </div>
+          <ul class="action-list">
+            {{#actionItems}}
+            <li>{{.}}</li>
+            {{/actionItems}}
+          </ul>
+        </div>
+        {{/hasActionItems}}
+      </div>
+      {{/recommendations}}
+    </section>
+    
+    <div class="vet-contact">
+      <h4>🩺 Consult Your Veterinarian</h4>
+      <p>Share this report with your veterinarian to discuss these recommendations and create a personalized care plan for {{petName}}.</p>
+    </div>
+    
+    <footer class="footer">
+      <div>PetVision Health Report - Report ID: {{reportId}}</div>
+      <div style="margin-top: 5px">
+        <em>Disclaimer: This AI analysis is not a substitute for professional veterinary care.</em>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

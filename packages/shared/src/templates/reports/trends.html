@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trend Analysis - PetVision</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #1a1a1a;
+      line-height: 1.6;
+      background: #f8f9fa;
+    }
+    
+    .page {
+      width: 100%;
+      min-height: 100vh;
+      padding: 40px;
+      background: white;
+    }
+    
+    .page-header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    
+    .page-header h1 {
+      font-size: 36px;
+      font-weight: 800;
+      color: #1e40af;
+    }
+    
+    .page-header p {
+      font-size: 16px;
+      color: #6b7280;
+      margin-top: 8px;
+    }
+    
+    .trends-section {
+      margin-bottom: 30px;
+    }
+    
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .section-title::before {
+      content: '';
+      width: 6px;
+      height: 30px;
+      background: #3b82f6;
+      border-radius: 3px;
+    }
+    
+    .trend-card {
+      background: #f9fafb;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .trend-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .trend-type {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .trend-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    
+    .trend-icon.improvement {
+      background: #dcfce7;
+      color: #166534;
+    }
+    
+    .trend-icon.decline {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    
+    .trend-icon.stable {
+      background: #e5e7eb;
+      color: #4b5563;
+    }
+    
+    .trend-label {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+    
+    .trend-percentage {
+      font-size: 32px;
+      font-weight: 800;
+    }
+    
+    .trend-percentage.improvement {
+      color: #22c55e;
+    }
+    
+    .trend-percentage.decline {
+      color: #ef4444;
+    }
+    
+    .trend-message {
+      font-size: 18px;
+      color: #374151;
+      margin-bottom: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      border-left: 4px solid #3b82f6;
+    }
+    
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .comparison-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      border: 2px solid #e5e7eb;
+    }
+    
+    .comparison-card.current {
+      border-color: #3b82f6;
+    }
+    
+    .comparison-card.previous {
+      border-color: #9ca3af;
+    }
+    
+    .comparison-label {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6b7280;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    
+    .comparison-date {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 10px;
+    }
+    
+    .comparison-severity {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    
+    .comparison-severity.green {
+      background: #dcfce7;
+      color: #166534;
+    }
+    
+    .comparison-severity.yellow {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .comparison-severity.red {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    
+    .findings-change {
+      margin-top: 20px;
+    }
+    
+    .change-summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .change-item {
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid #e5e7eb;
+    }
+    
+    .change-icon {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    
+    .change-value {
+      font-size: 24px;
+      font-weight: 700;
+    }
+    
+    .change-value.positive {
+      color: #22c55e;
+    }
+    
+    .change-value.negative {
+      color: #ef4444;
+    }
+    
+    .change-value.neutral {
+      color: #6b7280;
+    }
+    
+    .change-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #6b7280;
+      font-weight: 600;
+    }
+    
+    .no-trend-data {
+      text-align: center;
+      padding: 60px;
+      background: #f3f4f6;
+      border-radius: 16px;
+      border: 2px dashed #9ca3af;
+    }
+    
+    .no-trend-data-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+    
+    .no-trend-data h3 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #4b5563;
+      margin-bottom: 10px;
+    }
+    
+    .no-trend-data p {
+      font-size: 16px;
+      color: #6b7280;
+    }
+    
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 2px solid #e5e7eb;
+      text-align: center;
+      font-size: 12px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="page-header">
+      <h1>Trend Analysis</h1>
+      <p>{{petName}} - {{scanType}} Scan Progress</p>
+    </header>
+    
+    {{#hasTrendData}}
+    <section class="trends-section">
+      <h2 class="section-title">Overall Trend</h2>
+      
+      <div class="trend-card">
+        <div class="trend-header">
+          <div class="trend-type">
+            <div class="trend-icon {{trendType}}">{{trendIcon}}</div>
+            <div class="trend-label">{{trendLabel}}</div>
+          </div>
+          {{#hasPercentageChange}}
+          <div class="trend-percentage {{trendDirection}}">{{trendPercentage}}</div>
+          {{/hasPercentageChange}}
+        </div>
+        
+        <div class="trend-message">{{trendMessage}}</div>
+        
+        {{#hasSeverityChange}}
+        <div class="comparison-grid">
+          <div class="comparison-card previous">
+            <div class="comparison-label">Previous Scan</div>
+            <div class="comparison-date">{{previousScanDate}}</div>
+            <span class="comparison-severity {{previousSeverity}}">{{previousSeverityLabel}}</span>
+          </div>
+          <div class="comparison-card current">
+            <div class="comparison-label">Current Scan</div>
+            <div class="comparison-date">{{currentScanDate}}</div>
+            <span class="comparison-severity {{currentSeverity}}">{{currentSeverityLabel}}</span>
+          </div>
+        </div>
+        {{/hasSeverityChange}}
+        
+        {{#hasFindingsChange}}
+        <div class="findings-change">
+          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 15px">Findings Change Summary</h3>
+          <div class="change-summary">
+            <div class="change-item">
+              <div class="change-icon">➕</div>
+              <div class="change-value negative">{{addedFindings}}</div>
+              <div class="change-label">New</div>
+            </div>
+            <div class="change-item">
+              <div class="change-icon">✅</div>
+              <div class="change-value positive">{{resolvedFindings}}</div>
+              <div class="change-label">Resolved</div>
+            </div>
+            <div class="change-item">
+              <div class="change-icon">⬆️</div>
+              <div class="change-value positive">{{improvedFindings}}</div>
+              <div class="change-label">Improved</div>
+            </div>
+            <div class="change-item">
+              <div class="change-icon">⬇️</div>
+              <div class="change-value negative">{{worsenedFindings}}</div>
+              <div class="change-label">Worsened</div>
+            </div>
+          </div>
+        </div>
+        {{/hasFindingsChange}}
+      </div>
+    </section>
+    {{/hasTrendData}}
+    
+    {{^hasTrendData}}
+    <div class="no-trend-data">
+      <div class="no-trend-data-icon">📊</div>
+      <h3>Insufficient Data for Trend Analysis</h3>
+      <p>Trend analysis requires at least two scans of the same type. Continue scanning to track your pet's health progress over time.</p>
+    </div>
+    {{/hasTrendData}}
+    
+    <footer class="footer">
+      <div>PetVision Health Report - Report ID: {{reportId}}</div>
+      <div style="margin-top: 5px">
+        <em>Disclaimer: This AI analysis is not a substitute for professional veterinary care.</em>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

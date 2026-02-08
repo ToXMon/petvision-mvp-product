@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detailed Findings - PetVision</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #1a1a1a;
+      line-height: 1.6;
+      background: #f8f9fa;
+    }
+    
+    .page {
+      width: 100%;
+      min-height: 100vh;
+      padding: 40px;
+      background: white;
+    }
+    
+    .page-header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    
+    .page-header h1 {
+      font-size: 36px;
+      font-weight: 800;
+      color: #1e40af;
+    }
+    
+    .page-header p {
+      font-size: 16px;
+      color: #6b7280;
+      margin-top: 8px;
+    }
+    
+    .scan-image {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto 40px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .scan-image img {
+      width: 100%;
+      display: block;
+    }
+    
+    .findings-section {
+      margin-bottom: 30px;
+    }
+    
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .section-title::before {
+      content: '';
+      width: 6px;
+      height: 30px;
+      background: #3b82f6;
+      border-radius: 3px;
+    }
+    
+    .summary-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    
+    .stat-card.total {
+      background: #f0f9ff;
+      border: 2px solid #3b82f6;
+    }
+    
+    .stat-card.green {
+      background: #dcfce7;
+      border: 2px solid #22c55e;
+    }
+    
+    .stat-card.yellow {
+      background: #fef3c7;
+      border: 2px solid #f59e0b;
+    }
+    
+    .stat-card.red {
+      background: #fee2e2;
+      border: 2px solid #ef4444;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6b7280;
+      font-weight: 600;
+    }
+    
+    .stat-value {
+      font-size: 36px;
+      font-weight: 800;
+      margin-top: 5px;
+    }
+    
+    .finding-card {
+      background: #f9fafb;
+      border-left: 5px solid #6b7280;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .finding-card.severity-green {
+      border-left-color: #22c55e;
+      background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    }
+    
+    .finding-card.severity-yellow {
+      border-left-color: #f59e0b;
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    }
+    
+    .finding-card.severity-red {
+      border-left-color: #ef4444;
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    }
+    
+    .finding-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 15px;
+    }
+    
+    .finding-condition {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+    
+    .finding-severity {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .finding-severity.green {
+      background: #166534;
+      color: #dcfce7;
+    }
+    
+    .finding-severity.yellow {
+      background: #92400e;
+      color: #fef3c7;
+    }
+    
+    .finding-severity.red {
+      background: #991b1b;
+      color: #fee2e2;
+    }
+    
+    .finding-description {
+      font-size: 16px;
+      color: #374151;
+      margin-bottom: 15px;
+      line-height: 1.8;
+    }
+    
+    .finding-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      padding-top: 15px;
+      border-top: 2px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .detail-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6b7280;
+      font-weight: 600;
+    }
+    
+    .detail-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+    
+    .confidence-bar {
+      width: 100%;
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .confidence-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+    
+    .finding-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 8px;
+      font-size: 14px;
+      color: #1e40af;
+    }
+    
+    .finding-area svg {
+      width: 16px;
+      height: 16px;
+    }
+    
+    .no-findings {
+      text-align: center;
+      padding: 60px;
+      background: #f0fdf4;
+      border-radius: 16px;
+      border: 2px dashed #22c55e;
+    }
+    
+    .no-findings-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+    
+    .no-findings h3 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #166534;
+      margin-bottom: 10px;
+    }
+    
+    .no-findings p {
+      font-size: 16px;
+      color: #15803d;
+    }
+    
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 2px solid #e5e7eb;
+      text-align: center;
+      font-size: 12px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="page-header">
+      <h1>Detailed Findings Analysis</h1>
+      <p>{{petName}} - {{scanType}} Scan on {{scanDate}}</p>
+    </header>
+    
+    {{#scanImageUrl}}
+    <div class="scan-image">
+      <img src="{{scanImageUrl}}" alt="Scan Image" />
+    </div>
+    {{/scanImageUrl}}
+    
+    <section class="findings-section">
+      <h2 class="section-title">Summary Statistics</h2>
+      
+      <div class="summary-stats">
+        <div class="stat-card total">
+          <div class="stat-label">Total Findings</div>
+          <div class="stat-value">{{totalFindings}}</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Healthy</div>
+          <div class="stat-value">{{greenFindings}}</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-label">Attention</div>
+          <div class="stat-value">{{yellowFindings}}</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Concerning</div>
+          <div class="stat-value">{{redFindings}}</div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="findings-section">
+      <h2 class="section-title">Detailed Findings</h2>
+      
+      {{#hasFindings}}
+      {{#findings}}
+      <div class="finding-card severity-{{severity}}">
+        <div class="finding-header">
+          <h3 class="finding-condition">{{condition}}</h3>
+          <span class="finding-severity {{severity}}">{{severityLabel}}</span>
+        </div>
+        
+        <p class="finding-description">{{description}}</p>
+        
+        <div class="finding-details">
+          <div class="detail-item">
+            <span class="detail-label">Confidence Score</span>
+            <span class="detail-value">{{confidencePercent}}%</span>
+            <div class="confidence-bar" style="margin-top: 5px">
+              <div class="confidence-fill" style="width: {{confidencePercent}}%"></div>
+            </div>
+          </div>
+          
+          {{#hasArea}}
+          <div class="detail-item">
+            <span class="detail-label">Location</span>
+            <div class="finding-area">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+              </svg>
+              {{areaLabel}}
+            </div>
+          </div>
+          {{/hasArea}}
+        </div>
+      </div>
+      {{/findings}}
+      {{/hasFindings}}
+      
+      {{^hasFindings}}
+      <div class="no-findings">
+        <div class="no-findings-icon">✓</div>
+        <h3>No Issues Detected</h3>
+        <p>This scan did not detect any concerning findings. Your pet appears healthy in this area.</p>
+      </div>
+      {{/hasFindings}}
+    </section>
+    
+    <footer class="footer">
+      <div>PetVision Health Report - Report ID: {{reportId}}</div>
+      <div style="margin-top: 5px">
+        <em>Disclaimer: This AI analysis is not a substitute for professional veterinary care.</em>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

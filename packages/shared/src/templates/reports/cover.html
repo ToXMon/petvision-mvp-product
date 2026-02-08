@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PetVision Health Report</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #1a1a1a;
+      line-height: 1.6;
+      background: #f8f9fa;
+    }
+    
+    .page {
+      width: 100%;
+      min-height: 100vh;
+      padding: 40px;
+      background: white;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 3px solid #3b82f6;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    
+    .logo-text {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1e40af;
+    }
+    
+    .report-info {
+      text-align: right;
+      font-size: 14px;
+      color: #6b7280;
+    }
+    
+    .report-id {
+      font-weight: 600;
+      color: #3b82f6;
+    }
+    
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    
+    .title {
+      font-size: 42px;
+      font-weight: 800;
+      color: #1a1a1a;
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .pet-section {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 40px;
+      padding: 30px;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border-radius: 16px;
+    }
+    
+    .pet-image {
+      width: 100%;
+      aspect-ratio: 1;
+      background: #cbd5e1;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    
+    .pet-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .pet-image-placeholder {
+      font-size: 72px;
+    }
+    
+    .pet-details {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 15px;
+    }
+    
+    .pet-name {
+      font-size: 36px;
+      font-weight: 700;
+      color: #1e40af;
+    }
+    
+    .pet-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .info-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6b7280;
+      font-weight: 600;
+    }
+    
+    .info-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+    
+    .scan-section {
+      padding: 30px;
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 16px;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+    }
+    
+    .scan-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    
+    .scan-card {
+      padding: 20px;
+      background: #f9fafb;
+      border-radius: 12px;
+      text-align: center;
+    }
+    
+    .scan-card-label {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+    
+    .scan-card-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+    
+    .severity-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 20px;
+      border-radius: 30px;
+      font-size: 18px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .severity-green {
+      background: #dcfce7;
+      color: #166534;
+    }
+    
+    .severity-yellow {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .severity-red {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    
+    .summary-box {
+      padding: 30px;
+      background: linear-gradient(135deg, #fef9c3 0%, #fef08a 100%);
+      border-radius: 16px;
+      border-left: 6px solid #f59e0b;
+    }
+    
+    .summary-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #92400e;
+      margin-bottom: 15px;
+    }
+    
+    .summary-content {
+      font-size: 16px;
+      color: #78350f;
+      line-height: 1.8;
+    }
+    
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 2px solid #e5e7eb;
+      text-align: center;
+      font-size: 12px;
+      color: #6b7280;
+    }
+    
+    .qr-section {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .qr-code {
+      width: 120px;
+      height: 120px;
+    }
+    
+    .qr-text {
+      font-size: 14px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="logo">
+        <div class="logo-icon">PV</div>
+        <span class="logo-text">PetVision</span>
+      </div>
+      <div class="report-info">
+        <div>Report ID: <span class="report-id">{{reportId}}</span></div>
+        <div>Generated: {{generatedAt}}</div>
+      </div>
+    </header>
+    
+    <main class="content">
+      <h1 class="title">Health Analysis Report</h1>
+      
+      <section class="pet-section">
+        <div class="pet-image">
+          {{#petAvatar}}
+          <img src="{{petAvatar}}" alt="{{petName}}" />
+          {{/petAvatar}}
+          {{^petAvatar}}
+          <span class="pet-image-placeholder">🐾</span>
+          {{/petAvatar}}
+        </div>
+        <div class="pet-details">
+          <h2 class="pet-name">{{petName}}</h2>
+          <div class="pet-info">
+            <div class="info-item">
+              <span class="info-label">Species</span>
+              <span class="info-value">{{petSpecies}}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Breed</span>
+              <span class="info-value">{{petBreed}}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Age</span>
+              <span class="info-value">{{petAge}}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <section class="scan-section">
+        <h3 class="section-title">Scan Information</h3>
+        <div class="scan-grid">
+          <div class="scan-card">
+            <div class="scan-card-label">Scan Type</div>
+            <div class="scan-card-value">{{scanType}}</div>
+          </div>
+          <div class="scan-card">
+            <div class="scan-card-label">Date</div>
+            <div class="scan-card-value">{{scanDate}}</div>
+          </div>
+          <div class="scan-card">
+            <div class="scan-card-label">Severity</div>
+            <div class="severity-badge severity-{{severity}}">{{severityLabel}}</div>
+          </div>
+        </div>
+      </section>
+      
+      <section class="summary-box">
+        <h3 class="summary-title">Summary of Findings</h3>
+        <div class="summary-content">
+          This scan identified <strong>{{totalFindings}}</strong> finding(s). 
+          {{#trendMessage}}
+          <br><br><em>{{trendMessage}}</em>
+          {{/trendMessage}}
+        </div>
+      </section>
+    </main>
+    
+    <footer class="footer">
+      <div class="qr-section">
+        <img src="{{qrCodeUrl}}" alt="QR Code" class="qr-code" />
+        <span class="qr-text">Scan to view digital report</span>
+      </div>
+      <div style="margin-top: 15px">
+        Generated by PetVision AI Health Screening System
+      </div>
+      <div style="margin-top: 5px">
+        <em>Disclaimer: This AI analysis is not a substitute for professional veterinary care.</em>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
