@@ -1,0 +1,68 @@
+---
+version: "2.0"
+
+services:
+  petvision-web:
+    image: ghcr.io/toxmon/petvision-web:latest
+    expose:
+      - port: 3000
+        as: 80
+        to:
+          - global: true
+            accept:
+              - petvision.localhost
+    env:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+      - PORT=3000
+    profiles:
+      compute:
+        petvision-compute:
+          resources:
+            cpu:
+              units: 2
+            memory:
+              size: 4Gi
+            storage:
+              size: 10Gi
+      placement:
+        akash:
+          attributes:
+            host: akash
+          pricing:
+            petvision:
+              denom: uakt
+              amount: 10000
+
+profiles:
+  compute:
+    petvision-compute:
+      resources:
+        cpu:
+          units: 2
+          attributes:
+            cpu-arch: amd64
+        memory:
+          size: 4Gi
+          attributes:
+            memory: "4GB"
+        storage:
+          size: 10Gi
+          attributes:
+            storage: "10GB"
+  placement:
+    akash:
+      attributes:
+        host: akash
+      pricing:
+        petvision:
+          denom: uakt
+          amount: 10000
+
+dployment:
+  petvision-web:
+    akash:
+      profile: petvision-compute
+      pricing:
+        denom: uakt
+        amount: 10000
